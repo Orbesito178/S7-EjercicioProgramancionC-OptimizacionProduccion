@@ -2,19 +2,10 @@
 #include <string.h>
 #include <stdbool.h>
 #include "funciones.h"
+#include "procedimientos.h"
 
-/*void solicitarProductos (char nombresProductos[5][50]){
-    int i;
-    for(i=0; i<PRODS; i++){
-        printf("Ingrese el nombre del producto %d: ", i+1);
-        fgets(nombresProductos[i], 50, stdin);
-        nombresProductos[i][strcspn(nombresProductos[i], "\n")] = '\0';
-    }
-    for(i=0; i<PRODS; i++){
-        printf("%s\t", nombresProductos[i]);
-    }
-}*/
 
+// Muestra las opciones del menú y valida que el usuario elija un número entre 1 y 5
 int mostrarMenu(int *opcionMenu){
     printf("\n========== ACCIONES ========\n");
     printf("1. Mostrar Resultados.\n");
@@ -23,103 +14,88 @@ int mostrarMenu(int *opcionMenu){
     printf("4. Mostrar datos actuales.\n");
     printf("5. Salir.\n");
     printf("Escoja: ");
-    scanf("%d", opcionMenu);
+
+    // Si el usuario escribe algo que no sea un número válido, se lo pedimos de nuevo
+    while(scanf("%d", opcionMenu) != 1 || *opcionMenu < 1 || *opcionMenu > 5){
+        while(getchar() != '\n');
+        printf("Opcion invalida. Ingrese un numero entre 1 y 5: ");
+    }
     return *opcionMenu;
 }
 
-                                            
 
-
-
-
-
+// Suma el tiempo total que tomaría fabricar todos los productos
+// (tiempo de fabricación de cada uno multiplicado por su cantidad demandada)
 float calcularTiempoTotal(float atributosProds[][3], int *ptrprods){
-    float tiempoFabTotal=0;
-    for(int i=0; i<*ptrprods; i++){
-        tiempoFabTotal += atributosProds[i][0]*atributosProds[i][2];
-        
+    float tiempoFabTotal = 0;
+    for(int i = 0; i < *ptrprods; i++){
+        tiempoFabTotal += atributosProds[i][0] * atributosProds[i][2];
     }
     return tiempoFabTotal;
 }
 
+// Suma los recursos totales necesarios para fabricar todos los productos
+// (recursos por unidad de cada producto multiplicado por su cantidad demandada)
 float calcularRecursosTotal(float atributosProds[][3], int *ptrprods){
-    float recursosFabTotal=0;
-    for(int i=0; i<*ptrprods; i++){
-        recursosFabTotal += atributosProds[i][1]*atributosProds[i][2];
+    float recursosFabTotal = 0;
+    for(int i = 0; i < *ptrprods; i++){
+        recursosFabTotal += atributosProds[i][1] * atributosProds[i][2];
     }
     return recursosFabTotal;
 }
 
 
-void mostrarResultados(char nombresProductos[][50], float atributosProds[][3], float *ptrtiempoFabrica, float *ptrrecursosFabrica, int *ptrprods ){
-    float tiempoFabTotal= calcularTiempoTotal(atributosProds, ptrprods);
-    float recursosFabTotal=calcularRecursosTotal(atributosProds, ptrprods);
-    printf("\n======= RESULTADOS ========\n");
-
-    printf(">>>>> Tiempo Total de Fabricacion: %.2f\n", tiempoFabTotal);
-    printf(">>>>> Recursos Totales de Fabricacion: %.2f\n", recursosFabTotal);
-    if(tiempoFabTotal <= *ptrtiempoFabrica && recursosFabTotal<=*ptrrecursosFabrica){
-        printf("\t----- SU PEDIDO SE PUEDE REALIZAR CORRECTAMENTE ------\n");
-        printf("\t-Tiempo sobrante (de 500 h): %.2f\n", *ptrtiempoFabrica-tiempoFabTotal);
-        printf("\t-Recursos Sobrantes (de 300 recursos): %.2f\n", *ptrrecursosFabrica-recursosFabTotal);
-    }else{
-        printf("\tSU PEDIDO NO SE PUEDE REALIZAR.\n");
-        if(tiempoFabTotal>*ptrtiempoFabrica){
-            printf("\t-Tiempo faltante (de 500 h): %.2f\n", tiempoFabTotal-*ptrtiempoFabrica);
-        }else if(recursosFabTotal>*ptrrecursosFabrica){
-            printf("\t-Recursos faltantes (de 300 recursos): %.2f\n", recursosFabTotal-*ptrrecursosFabrica);
-        }
-        
-        
-    }
-    
-
-}
-
-
+// Busca un producto por nombre y devuelve su posición en el arreglo
+// Si no lo encuentra o el usuario cancela, devuelve -1
 int busquedaNombre(char nombresProductos[][50], float atributosProds[][3], int *ptrprods){
-    char buscado[50]={0};
-    bool encontrado=false;
-    int indice=0;
-    while(getchar()!='\n');
+    char buscado[50] = {0};
+    bool encontrado = false;
+    int indice = -1;
+
+    while(getchar() != '\n'); // Limpiamos el buffer antes de leer texto
+
     do{
         printf("\n======= BUSQUEDA POR NOMBRE ========\n");
         printf("Producto a buscar (0 para cancelar): ");
-        
+
         fgets(buscado, 50, stdin);
-        buscado[strcspn(buscado, "\n")]='\0';
-        
-        if(strcmp(buscado, "0")==0){
-            encontrado=true;
+        buscado[strcspn(buscado, "\n")] = '\0'; // Quitamos el salto de línea que deja fgets
+
+        // Si escribe 0, cancelamos la búsqueda
+        if(strcmp(buscado, "0") == 0){
+            encontrado = true;
             return -1;
-        }else{
-            for(int i=0; i<*ptrprods; i++){
-                if(strcmp(nombresProductos[i], buscado)==0){
-                    encontrado=true;
-                    indice=i;
+        } else {
+            // Recorremos todos los productos buscando el que coincida con lo que escribió el usuario
+            for(int i = 0; i < *ptrprods; i++){
+                if(strcmp(nombresProductos[i], buscado) == 0){
+                    encontrado = true;
+                    indice = i;
                     break;
-                }else{
-                    encontrado=false;
+                } else {
+                    encontrado = false;
                 }
             }
-            if(encontrado==true){
+
+            //si se encuentra, se retorna el índice del producto encontrado.
+            if(encontrado == true){
                 printf("----- PRODUCTO ENCONTRADO ----\n");
                 return indice;
-            }else{
+            } else {
                 printf("------ PRODUCTO NO ENCONTRADO -----\n");
-                
             }
         }
-        
-    }while(encontrado!=true);
 
+    } while(encontrado != true); // Seguimos preguntando hasta encontrarlo o cancelar
+
+    return -1;
 }
 
 
-
-
+// Muestra los datos actuales de un producto y le pregunta al usuario cuál dato quiere editar
+// Devuelve el número del dato elegido (1=Tiempo, 2=Recursos, 3=Demanda, 4=Salir)
 int mostrarDatos(char nombresProductos[][50], float atributosProds[][3], int indice){
-    int datoEditar=0;
+    int datoEditar = 0;
     printf(">>>> %s\n", nombresProductos[indice]);
     printf("\t-(1) Tiempo: %.2f\n", atributosProds[indice][0]);
     printf("\t-(2) Recursos: %.2f\n", atributosProds[indice][1]);
@@ -127,76 +103,12 @@ int mostrarDatos(char nombresProductos[][50], float atributosProds[][3], int ind
     printf("\t-(4) Salir.\n");
     printf("----------------------------\n");
     printf("Dato a Editar: ");
-    scanf("%d", &datoEditar);
+
+    // Validamos que elija una opción válida
+    while(scanf("%d", &datoEditar) != 1 || datoEditar < 1 || datoEditar > 4){
+        while(getchar() != '\n');
+        printf("Opcion invalida. Ingrese un numero entre 1 y 4: ");
+    }
+    while(getchar() != '\n');
     return datoEditar;
-
-}
-
-void editarDatos(char nombresProductos[][50], float atributosProds[][3], int *ptrprods){
-    int indice=busquedaNombre(nombresProductos, atributosProds, ptrprods);
-    int datoEditar=0;
-    if(indice==-1){
-        return;
-    } else {
-        do{
-            datoEditar=mostrarDatos(nombresProductos, atributosProds, indice);
-            if(datoEditar==4){
-                return;
-            }else{
-                printf("Ingrese el nuevo dato: ");
-                scanf("%f", &atributosProds[indice][datoEditar-1]);
-            }
-            
-        }while(datoEditar!=4);
-        
-        
-        
-    }
-    
-
-}
-
-
-
-
-void eliminarProducto(char nombresProductos[][50], float atributosProds[][3],int *ptrprods){
-    int indice=busquedaNombre(nombresProductos, atributosProds, ptrprods);
-    for(int i=indice; i<*ptrprods-1; i++){
-        strcpy(nombresProductos[i], nombresProductos[i+1]);
-        for(int j=0; j<ATRIB; j++){
-            atributosProds[i][j]=atributosProds[i+1][j];
-        }
-        
-    }
-    (*ptrprods)--;
-}
-
-
-
-
-
-
-void acciones(int *opcionMenu, char nombresProductos[][50], float atributosProds[][3], float *ptrtiempoFabrica, float *ptrrecursosFabrica, int *ptrprods){
-    do{
-        mostrarMenu(opcionMenu);
-        switch(*opcionMenu){
-            case 1:
-                mostrarResultados(nombresProductos, atributosProds, ptrtiempoFabrica, ptrrecursosFabrica, ptrprods);
-                break;
-            case 2:
-                editarDatos(nombresProductos, atributosProds, ptrprods);
-                break;
-            case 3:
-                eliminarProducto(nombresProductos, atributosProds, ptrprods);
-                break;
-            case 4:
-                mostrarDatosActuales(nombresProductos, atributosProds, ptrprods);
-                break;
-            case 5:
-                printf("GRACIAS POR USAR ORB-INDUSTRIES\n");
-                break;
-        }
-    }while(*opcionMenu!=5);
-    
-    
 }
