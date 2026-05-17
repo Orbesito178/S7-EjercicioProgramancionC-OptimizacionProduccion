@@ -147,19 +147,26 @@ void editarDatos(char nombresProductos[][50], float atributosProds[][3], int *pt
         do{
             datoEditar = mostrarDatos(nombresProductos, atributosProds, indice);
 
-            if(datoEditar == 4){
+            if(datoEditar == 5){
                 return; // El usuario decidió salir sin editar más
             } else {
-                // Pedimos el nuevo valor y lo guardamos en la posición correspondiente
-                printf("Ingrese el nuevo dato: ");
-                while(scanf("%f", &atributosProds[indice][datoEditar-1]) != 1 || atributosProds[indice][datoEditar-1] <= 0){
+                if(datoEditar==1){
+                    printf("Ingrese el nuevo nombre: ");
+                    fgets(nombresProductos[indice], 20, stdin);
+                    nombresProductos[indice][strcspn(nombresProductos[indice], "\n")] = '\0';
+                } else{
+                    // Pedimos el nuevo valor y lo guardamos en la posición correspondiente
+                    printf("Ingrese el nuevo dato: ");
+                    while(scanf("%f", &atributosProds[indice][datoEditar-2]) != 1 || atributosProds[indice][datoEditar-2] <= 0){
+                        while(getchar() != '\n');
+                        printf("  [!] Valor invalido. Ingrese un numero mayor a 0: ");
+                    }
                     while(getchar() != '\n');
-                    printf("  [!] Valor invalido. Ingrese un numero mayor a 0: ");
                 }
-                while(getchar() != '\n');
+                
             }
 
-        } while(datoEditar != 4);
+        } while(datoEditar != 5);
     }
 }
 

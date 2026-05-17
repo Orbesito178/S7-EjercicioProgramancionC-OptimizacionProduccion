@@ -97,17 +97,18 @@ int busquedaNombre(char nombresProductos[][50], float atributosProds[][3], int *
 int mostrarDatos(char nombresProductos[][50], float atributosProds[][3], int indice){
     int datoEditar = 0;
     printf(">>>> %s\n", nombresProductos[indice]);
-    printf("\t-(1) Tiempo: %.2f\n", atributosProds[indice][0]);
-    printf("\t-(2) Recursos: %.2f\n", atributosProds[indice][1]);
-    printf("\t-(3) Cantidad Demandada: %.0f\n", atributosProds[indice][2]);
-    printf("\t-(4) Salir.\n");
+    printf("\t-(1) Nombre: %s\n", nombresProductos[indice]);
+    printf("\t-(2) Tiempo: %.2f\n", atributosProds[indice][0]);
+    printf("\t-(3) Recursos: %.2f\n", atributosProds[indice][1]);
+    printf("\t-(4) Cantidad Demandada: %.0f\n", atributosProds[indice][2]);
+    printf("\t-(5) Salir.\n");
     printf("----------------------------\n");
     printf("Dato a Editar: ");
 
     // Validamos que elija una opción válida
-    while(scanf("%d", &datoEditar) != 1 || datoEditar < 1 || datoEditar > 4){
+    while(scanf("%d", &datoEditar) != 1 || datoEditar < 1 || datoEditar > 5){
         while(getchar() != '\n');
-        printf("Opcion invalida. Ingrese un numero entre 1 y 4: ");
+        printf("Opcion invalida. Ingrese un numero entre 1 y 5: ");
     }
     while(getchar() != '\n');
     return datoEditar;
