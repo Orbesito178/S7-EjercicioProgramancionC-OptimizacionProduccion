@@ -3,7 +3,7 @@
 #ifndef FUNCIONES_H
 #define FUNCIONES_H
 
-#define PRODS 5  // Número máximo de productos que maneja la fábrica
+
 #define ATRIB 3  // Cada producto tiene 3 atributos: tiempo, recursos y demanda
 
 #include <stdio.h>
